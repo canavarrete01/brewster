@@ -46,18 +46,18 @@ __status__ = "Development"
 # First get data and parameters for object
 
 # Give the run name
-runname = "2M2224_ESlabFeDeck"
+runname = "G570D_test_carolina" #EDITED ----------------
 
 # get the observed spectrum
 # text file with columns:
 # wavelength in microns
 # flux in W/m2/um
 # flux error
-obspec = np.asfortranarray(np.loadtxt("2M2224_multi1015.txt",dtype='d',unpack='true'))
+obspec = np.asfortranarray(np.loadtxt("G570D_2MassJcalib.dat",dtype='d',unpack='true'))#EDITED ----------------
 
 # Now the wavelength range
-w1 = 1.0
-w2 = 15.
+w1 = 1.0 #EDITED ----------------
+w2 = 2.5 #EDITED ----------------
 
 # FWHM of data in microns(WE DON'T USE THIS FOR SPEX DATA.
 #  >0 = some value of FWHM for convolving the data
@@ -65,21 +65,21 @@ w2 = 15.
 # -1 = spex + AKARI + spitzer
 # -2 = spex + spitzer
 # -3 = spex + L band + spitzer
-fwhm = -2
+fwhm = 0.0 #EDITED ----------------
 
 # DISTANCE (in parsecs)
-dist = 11.35
+dist = 5.84 #EDITED ----------------
 
 # How many patches & clouds do we want??
 # Must be at least 1 of each, but can turn off cloud below
 npatches = 1
-nclouds = 2
+nclouds = 1 #EDITED ----------------
 
 # set up array for setting patchy cloud answers
 do_clouds = np.zeros([npatches], dtype='i')
 
 # Which patchdes are cloudy
-do_clouds[:] = 1
+do_clouds[:] = 0 #EDITED ----------------
 
 # set up cloud detail arrays
 cloudnum = np.zeros([npatches, nclouds], dtype='i')
@@ -98,8 +98,8 @@ cloudtype = np.zeros([npatches, nclouds], dtype='i')
 cloudnum[:,0] = 5
 cloudtype[:,0] = 1
 
-cloudnum[:,1] = 2
-cloudtype[:,1] = 2
+# cloudnum[:,1] = 2 #EDITED ----------------
+# cloudtype[:,1] = 2 #EDITED ----------------
 
 # second patch turn off top cloud
 #cloudnum[1,0] = 5
@@ -135,8 +135,8 @@ press = pow(10,logfinePress)
 
 # Where are the cross sections?
 # give the full path
-xpath = "/beegfs/car/bb/Linelists/"
-xlist = 'gaslistRox.dat' #The gaslistR10k better. Rox is sampled at 10k (rather than interpolated to 10k), but they don’t fit the data as well
+xpath = "/home/cnavarrete/mendel-nas1/linelists/" #EDITED ----------------
+xlist = 'gaslistR10k.dat' #The gaslistR10k better. Rox is sampled at 10k (rather than interpolated to 10k), but they don’t fit the data as well
 
 # now the cross sections
 
@@ -145,20 +145,20 @@ xlist = 'gaslistRox.dat' #The gaslistR10k better. Rox is sampled at 10k (rather 
 # together at Asplund solar ratio. See Line at al (2015)
 # Else if K is after Na, they'll be separate
 
-gaslist = ['h2o','co','co2','ch4','tio','vo','crh','feh','k','na']
+gaslist = ['h2o','co','nh3','ch4','k','na']  #EDITED ----------------
 
 ngas = len(gaslist)
 
 # some switches for alternative cross sections
 # Use Mike's (Burrows) Alkalis?
 #Use Allard (=0), Burrow's(=1), and new Allard (=2)
-malk = 0
+malk = 1 #EDITED ----------------
 # Use Mike's CH4?
-mch4 = 1
+mch4 = 0 #EDITED ----------------
 
 # now set up the EMCEE stuff
 # How many dimensions???  Count them up in the p0 declaration. Carefully
-ndim  = 29
+ndim  = 14 #EDITED ----------------
 
 
 # How many walkers we running?
@@ -179,7 +179,7 @@ runtest = 0
 make_arg_pickle = 0
 
 # Where is the output going?
-outdir = "/beegfs/car/bb/"
+outdir = "/outputs/"
 
 # Are we using DISORT for radiative transfer?
 # (HINT: Not in this century)
@@ -215,21 +215,30 @@ p0 = np.empty([nwalkers,ndim])
 if (fresh == 0):
     # ----- "Gas" parameters (Includes gases, gravity, logg, scale factor, dlambda, and tolerance parameter) --
     # # For Non-chemical equilibrium
-    p0[:,0] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 3.5 # H2O
-    p0[:,1] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 4.0 # CO
-    p0[:,2] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 4.0 # CO2    
-    p0[:,3] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 4.0 # CH4
-    p0[:,4] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 8.0 # TiO
-    p0[:,5] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 8.0 # VO
-    p0[:,6] = (1.0*np.random.randn(nwalkers).reshape(nwalkers)) - 8.0 # CrH
-    p0[:,7] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 8.0 # FeH
-    p0[:,8] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 5.5 # Na+K
-    p0[:,9] = 0.1*np.random.randn(nwalkers).reshape(nwalkers) + 4.9  # gravity
-    p0[:,10] = r2d2 + (np.random.randn(nwalkers).reshape(nwalkers) * (0.1*r2d2))  # scale factor 1
-    p0[:,11] =  1.0 + (np.random.randn(nwalkers).reshape(nwalkers) * 0.1) # scale factor 2 (for second instrument relative to first)
-    p0[:,12] = np.random.randn(nwalkers).reshape(nwalkers) * 0.001  # dlambda
-    p0[:,13] = np.log10((np.random.rand(nwalkers).reshape(nwalkers) * (max(obspec[2,:]**2)*(0.1 - 0.01))) + (0.01*min(obspec[2,10::3]**2)))  # tolerance parameter 1
-    p0[:,14] = np.log10((np.random.rand(nwalkers).reshape(nwalkers) * (max(obspec[2,:]**2)*(0.1 - 0.01))) + (0.01*min(obspec[2,10::3]**2))) # tolerance parameter 2
+        p0[:,0] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 3.5 # H2O
+    p0[:,1] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 7.5 # CO
+    p0[:,2] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) -3.5 # CH4
+    p0[:,3] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 4.6 # Nh3
+    p0[:,4] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 5.5 # Na+K
+    p0[:,5] = 0.1*np.random.randn(nwalkers).reshape(nwalkers) + 4.0  # gravity
+    p0[:,6] = r2d2 + (np.random.randn(nwalkers).reshape(nwalkers) * (0.5*r2d2))  # scale factor 1
+    p0[:,7] = np.random.randn(nwalkers).reshape(nwalkers) * 0.001  # dlambda
+    p0[:,9] = 0.39 + 0.1*np.random.randn(nwalkers).reshape(nwalkers)
+    p0[:,10] = 0.14 +0.05*np.random.randn(nwalkers).reshape(nwalkers)
+    p0[:,11] = -1.2 + 0.2*np.random.randn(nwalkers).reshape(nwalkers)
+    p0[:,12] = 2.25+ 0.2*np.random.randn(nwalkers).reshape(nwalkers)
+    p0[:,13] = 4200. + (500.*  np.random.randn(nwalkers).reshape(nwalkers))
+    for i in range (0,nwalkers):
+        while True:
+            Tcheck = TPmod.set_prof(proftype, coarsePress, press, p0[i, ndim-5:])
+            if min(Tcheck) > 1.0:
+                break
+            else:
+                p0[i, ndim-5] = 0.39 + 0.01*np.random.randn()
+                p0[i, ndim-4] = 0.14 + 0.01*np.random.randn()
+                p0[i, ndim-3] = -1.2 + 0.2*np.random.randn()
+                p0[i, ndim-2] = 2. + 0.2*np.random.randn()
+                p0[i, ndim-1] = 4200. + (200.*np.random.randn())
     # If you do Chemical Equilibrium you will have these parameters instead
     # p0[:, 0] = (0.1 * np.random.randn(nwalkers).reshape(nwalkers)) - 0.5  # met
     # p0[:, 1] = (0.1 * np.random.randn(nwalkers).reshape(nwalkers)) + 1  # CO
@@ -241,20 +250,20 @@ if (fresh == 0):
     # These parameters should be commented out or adjusted for
     # e.g grey cloud or power law cloud, or no cloud, or deck cloud
     # this example is a "real" cloud with Hansen a and b parameters
-    p0[:,15] = np.random.rand(nwalkers).reshape(nwalkers) # optical depth
-    p0[:,16] = -2. + 0.5 * np.random.randn(nwalkers).reshape(nwalkers) # cloud top pressure
-    p0[:,17] = np.random.rand(nwalkers).reshape(nwalkers) # cloud thickness in pressure
-    p0[:,18] = -1. + 0.1*np.random.randn(nwalkers).reshape(nwalkers) # Hansen a if "real" cloud or single scattering albedo between 0 and 1 (np.rand=uniform distribution) for 89/99 cloud
-    p0[:,19] = 0.1*np.random.rand(nwalkers).reshape(nwalkers) # Hansen b for "real" cloud or Power law for 89/99 cloud
-    # Deck cloud params
+    # p0[:,15] = np.random.rand(nwalkers).reshape(nwalkers) # optical depth
+    # p0[:,16] = -2. + 0.5 * np.random.randn(nwalkers).reshape(nwalkers) # cloud top pressure
+    # p0[:,17] = np.random.rand(nwalkers).reshape(nwalkers) # cloud thickness in pressure
+    # p0[:,18] = -1. + 0.1*np.random.randn(nwalkers).reshape(nwalkers) # Hansen a if "real" cloud or single scattering albedo between 0 and 1 (np.rand=uniform distribution) for 89/99 cloud
+    # p0[:,19] = 0.1*np.random.rand(nwalkers).reshape(nwalkers) # Hansen b for "real" cloud or Power law for 89/99 cloud
+    # # Deck cloud params
     # These parameters should be commented out or adjusted for
     # e.g grey cloud or power law cloud, or no cloud, or deck cloud
     # this example is a "real" cloud with Hansen a and b parameters
-    p0[:,20] = 0.5+ 0.2* np.random.rand(nwalkers).reshape(nwalkers) # cloud top pressure
-    p0[:,21] = np.random.rand(nwalkers).reshape(nwalkers) # cloud thickness in pressure
-    p0[:,22] = -1. + 0.1*np.random.randn(nwalkers).reshape(nwalkers) # Hansen a if "real" cloud or single scattering albedo between 0 and 1 (np.rand=uniform distribution) for 89/99 cloud
-    p0[:,23] = np.abs(0.1+ 0.01*np.random.randn(nwalkers).reshape(nwalkers)) # Hansen b for "real" cloud or Power law for 89/99 cloud
-    # ------ And now the T-P params. --------
+    # p0[:,20] = 0.5+ 0.2* np.random.rand(nwalkers).reshape(nwalkers) # cloud top pressure
+    # p0[:,21] = np.random.rand(nwalkers).reshape(nwalkers) # cloud thickness in pressure
+    # p0[:,22] = -1. + 0.1*np.random.randn(nwalkers).reshape(nwalkers) # Hansen a if "real" cloud or single scattering albedo between 0 and 1 (np.rand=uniform distribution) for 89/99 cloud
+    # p0[:,23] = np.abs(0.1+ 0.01*np.random.randn(nwalkers).reshape(nwalkers)) # Hansen b for "real" cloud or Power law for 89/99 cloud
+    # # ------ And now the T-P params. --------
     # For profile type 1
     # p0[:, ndim-14] = 50. + (np.random.randn(nwalkers).reshape(nwalkers))  # gamma - removes wiggles unless necessary to profile
     # BTprof = np.loadtxt("BTtemp800_45_13.dat")
@@ -269,22 +278,22 @@ if (fresh == 0):
     #             for i in range(0,13):
     #                 p0[:,ndim-13 + i] = BTprof[i] + (50. * np.random.randn(nwalkers).reshape(nwalkers))
     # These are for type 2. 
-    p0[:,24] = 0.39 + 0.1*np.random.randn(nwalkers).reshape(nwalkers)
-    p0[:,25] = 0.14 +0.05*np.random.randn(nwalkers).reshape(nwalkers)
-    p0[:,26] = -1.2 + 0.2*np.random.randn(nwalkers).reshape(nwalkers)
-    p0[:,27] = 2.25+ 0.2*np.random.randn(nwalkers).reshape(nwalkers)
-    p0[:,28] = 4200. + (500.*  np.random.randn(nwalkers).reshape(nwalkers))
-    for i in range (0,nwalkers):
-        while True:
-            Tcheck = TPmod.set_prof(proftype, coarsePress, press, p0[i, ndim-5:])
-            if min(Tcheck) > 1.0:
-                break
-            else:
-                p0[i, ndim-5] = 0.39 + 0.01*np.random.randn()
-                p0[i, ndim-4] = 0.14 + 0.01*np.random.randn()
-                p0[i, ndim-3] = -1.2 + 0.2*np.random.randn()
-                p0[i, ndim-2] = 2. + 0.2*np.random.randn()
-                p0[i, ndim-1] = 4200. + (200.*np.random.randn())
+    # p0[:,24] = 0.39 + 0.1*np.random.randn(nwalkers).reshape(nwalkers)
+    # p0[:,25] = 0.14 +0.05*np.random.randn(nwalkers).reshape(nwalkers)
+    # p0[:,26] = -1.2 + 0.2*np.random.randn(nwalkers).reshape(nwalkers)
+    # p0[:,27] = 2.25+ 0.2*np.random.randn(nwalkers).reshape(nwalkers)
+    # p0[:,28] = 4200. + (500.*  np.random.randn(nwalkers).reshape(nwalkers))
+    # for i in range (0,nwalkers):
+    #     while True:
+    #         Tcheck = TPmod.set_prof(proftype, coarsePress, press, p0[i, ndim-5:])
+    #         if min(Tcheck) > 1.0:
+    #             break
+    #         else:
+    #             p0[i, ndim-5] = 0.39 + 0.01*np.random.randn()
+    #             p0[i, ndim-4] = 0.14 + 0.01*np.random.randn()
+    #             p0[i, ndim-3] = -1.2 + 0.2*np.random.randn()
+    #             p0[i, ndim-2] = 2. + 0.2*np.random.randn()
+    #             p0[i, ndim-1] = 4200. + (200.*np.random.randn())
     # These are for type 3.
     # p0[:, 5] = 0.39 + 0.1 * np.random.randn(nwalkers).reshape(nwalkers)  # alpha
     # p0[:, 6] = 0.14 + 0.05 * np.random.randn(nwalkers).reshape(nwalkers)  # beta
