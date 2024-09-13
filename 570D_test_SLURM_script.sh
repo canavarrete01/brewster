@@ -4,14 +4,14 @@
 #SBATCH --error=G570_check.e%j
 #SBATCH --nodes=2
 #SBATCH --ntasks-per-node=48
-#SBATCH --time=37:00:00
-#SBATCH --mail-user=ecg224@cornell.edu
+#SBATCH --time=00:30:00
+#SBATCH --mail-user=cnavarrete@amnh.org
 #SBATCH --mail-type=ALL
 
 source ~/.bashrc
-module load openmpi3/3.1.4
+module load OpenMPI/openmpi-2.0.1
 
-declare -xr WDIR="/home/cegonzales/brewster_Aion/brewster_51Peg_exoplanets"
+declare -xr WDIR="/home/cnavarrete/mendel-nas1/brewster/"
 
 declare PATH=${PATH}:${WDIR}
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${WDIR}:~/
@@ -39,7 +39,7 @@ echo ------------------------------------------------------
 cd ${WDIR}
 
 
-mpirun python G570D_test.py > /home/cegonzales/brewster_Aion/brewster_51Peg_exoplanets/Results/G570D_check/G570D_check.log
+mpirun python G570D_test.py > /home/cnavarrete/mendel-nas1/brewster/Results/G570D_check/G570D_check.log
 
 time_end=`date '+%T%t%d_%h_06'`
 echo Started at: $time_start
