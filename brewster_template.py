@@ -46,7 +46,7 @@ __status__ = "Development"
 # First get data and parameters for object
 
 # Give the run name
-runname = "G570D_test_carolina" #EDITED ----------------
+runname = "G570D_test_0923_carolina" #EDITED ----------------
 
 # get the observed spectrum
 # text file with columns:
@@ -135,7 +135,7 @@ press = pow(10,logfinePress)
 
 # Where are the cross sections?
 # give the full path
-xpath = "/home/cnavarrete/mendel-nas1/linelists/" #EDITED ----------------
+xpath = "/home/cnavarrete/mendel-nas1/BDNYC/Linelists/" #EDITED ----------------
 xlist = 'gaslistR10k.dat' #The gaslistR10k better. Rox is sampled at 10k (rather than interpolated to 10k), but they don’t fit the data as well
 
 # now the cross sections
@@ -171,7 +171,7 @@ nburn = 10000
 niter = 30000
 
 # Is this a test or restart?
-runtest = 0
+runtest = 1
 
 # Are we writing the arguments to a pickle?
 # Set= 0 for no and run,Set = 1 for write and exit (no run); = 2 for write and continue
@@ -179,7 +179,7 @@ runtest = 0
 make_arg_pickle = 0
 
 # Where is the output going?
-outdir = "/outputs/"
+outdir = "/home/cnavarrete/mendel-nas1/BDNYC/brewster/Results/"
 
 # Are we using DISORT for radiative transfer?
 # (HINT: Not in this century)
