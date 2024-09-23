@@ -9,9 +9,9 @@
 #SBATCH --mail-type=ALL
 
 source ~/.bashrc
-module load OpenMPI/openmpi-2.0.1
+module load OpenMPI/openmpi-2.1.6
 
-declare -xr WDIR="/home/cnavarrete/mendel-nas1/brewster/"
+declare -xr WDIR="/home/cnavarrete/mendel-nas1/BDNYC/brewster/"
 
 declare PATH=${PATH}:${WDIR}
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${WDIR}:~/
@@ -39,7 +39,7 @@ echo ------------------------------------------------------
 cd ${WDIR}
 
 
-mpirun python G570D_test.py > /home/cnavarrete/mendel-nas1/brewster/Results/G570D_check/G570D_check.log
+mpirun python brewster_template.py > /home/cnavarrete/mendel-nas1/BDNYC/brewster/Results/G570D_check.log
 
 time_end=`date '+%T%t%d_%h_06'`
 echo Started at: $time_start
