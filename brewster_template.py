@@ -46,7 +46,7 @@ __status__ = "Development"
 # First get data and parameters for object
 
 # Give the run name
-runname = "G570D_test_0923_carolina" #EDITED ----------------
+runname = "G570D_0924_CN" #EDITED ----------------
 
 # get the observed spectrum
 # text file with columns:
@@ -136,7 +136,7 @@ press = pow(10,logfinePress)
 # Where are the cross sections?
 # give the full path
 xpath = "/home/cnavarrete/mendel-nas1/BDNYC/Linelists/" #EDITED ----------------
-xlist = 'gaslistR10k.dat' #The gaslistR10k better. Rox is sampled at 10k (rather than interpolated to 10k), but they don’t fit the data as well
+xlist = "gaslistR10k.dat"  #The gaslistR10k better. Rox is sampled at 10k (rather than interpolated to 10k), but they don’t fit the data as well
 
 # now the cross sections
 
@@ -179,7 +179,7 @@ runtest = 1
 make_arg_pickle = 0
 
 # Where is the output going?
-outdir = "/home/cnavarrete/mendel-nas1/BDNYC/brewster/Results/"
+outdir = "/home/cnavarrete/mendel-nas1/BDNYC/brewster/"
 
 # Are we using DISORT for radiative transfer?
 # (HINT: Not in this century)
@@ -215,30 +215,31 @@ p0 = np.empty([nwalkers,ndim])
 if (fresh == 0):
     # ----- "Gas" parameters (Includes gases, gravity, logg, scale factor, dlambda, and tolerance parameter) --
     # # For Non-chemical equilibrium
-        p0[:,0] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 3.5 # H2O
-    p0[:,1] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 7.5 # CO
-    p0[:,2] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) -3.5 # CH4
-    p0[:,3] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 4.6 # Nh3
-    p0[:,4] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 5.5 # Na+K
-    p0[:,5] = 0.1*np.random.randn(nwalkers).reshape(nwalkers) + 4.0  # gravity
-    p0[:,6] = r2d2 + (np.random.randn(nwalkers).reshape(nwalkers) * (0.5*r2d2))  # scale factor 1
-    p0[:,7] = np.random.randn(nwalkers).reshape(nwalkers) * 0.001  # dlambda
-    p0[:,9] = 0.39 + 0.1*np.random.randn(nwalkers).reshape(nwalkers)
-    p0[:,10] = 0.14 +0.05*np.random.randn(nwalkers).reshape(nwalkers)
-    p0[:,11] = -1.2 + 0.2*np.random.randn(nwalkers).reshape(nwalkers)
-    p0[:,12] = 2.25+ 0.2*np.random.randn(nwalkers).reshape(nwalkers)
-    p0[:,13] = 4200. + (500.*  np.random.randn(nwalkers).reshape(nwalkers))
-    for i in range (0,nwalkers):
-        while True:
-            Tcheck = TPmod.set_prof(proftype, coarsePress, press, p0[i, ndim-5:])
-            if min(Tcheck) > 1.0:
-                break
-            else:
-                p0[i, ndim-5] = 0.39 + 0.01*np.random.randn()
-                p0[i, ndim-4] = 0.14 + 0.01*np.random.randn()
-                p0[i, ndim-3] = -1.2 + 0.2*np.random.randn()
-                p0[i, ndim-2] = 2. + 0.2*np.random.randn()
-                p0[i, ndim-1] = 4200. + (200.*np.random.randn())
+	p0[:,0] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 3.5 # H2O
+	p0[:,1] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 7.5 #C0
+	p0[:,2] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) -3.5 #CH4
+	p0[:,3] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 4.6 #Nh3
+	p0[:,4] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 5.5 # Na+K
+	p0[:,5] = 0.1*np.random.randn(nwalkers).reshape(nwalkers) + 4.0  # gravity
+	p0[:,6] = r2d2 + (np.random.randn(nwalkers).reshape(nwalkers) * (0.5*r2d2))  # scale factor 1
+	p0[:,7] = np.random.randn(nwalkers).reshape(nwalkers) * 0.001  # dlambda
+	p0[:,8] = np.log10((np.random.rand(nwalkers).reshape(nwalkers) * (max(obspec[2,:]**2)*(0.1-0.01))) + (0.01*min(obspec[2,10::3]**2)))
+	p0[:,9] = 0.39 + 0.1*np.random.randn(nwalkers).reshape(nwalkers)
+	p0[:,10] = 0.14 +0.05*np.random.randn(nwalkers).reshape(nwalkers)
+	p0[:,11] = -1.2 + 0.2*np.random.randn(nwalkers).reshape(nwalkers)
+	p0[:,12] = 2.25+ 0.2*np.random.randn(nwalkers).reshape(nwalkers)
+	p0[:,13] = 4200. + (500.*  np.random.randn(nwalkers).reshape(nwalkers))
+	for i in range (0,nwalkers):
+        	while True:
+            		Tcheck = TPmod.set_prof(proftype, coarsePress, press, p0[i, ndim-5:])
+            		if min(Tcheck) > 1.0:
+               			 break
+            		else:
+                		p0[i, ndim-5] = 0.39 + 0.01*np.random.randn()
+                		p0[i, ndim-4] = 0.14 + 0.01*np.random.randn()
+                		p0[i, ndim-3] = -1.2 + 0.2*np.random.randn()
+                		p0[i, ndim-2] = 2. + 0.2*np.random.randn()
+                		p0[i, ndim-1] = 4200. + (200.*np.random.randn())
     # If you do Chemical Equilibrium you will have these parameters instead
     # p0[:, 0] = (0.1 * np.random.randn(nwalkers).reshape(nwalkers)) - 0.5  # met
     # p0[:, 1] = (0.1 * np.random.randn(nwalkers).reshape(nwalkers)) + 1  # CO

@@ -1360,12 +1360,13 @@ def modelspec(theta, args,gnostics):
     return shiftspec, cloud_phot_press,other_phot_press,cfunc
 
 
-def get_opacities(gaslist,w1,w2,press,xpath='../Linelists',xlist='gaslistR10K.dat',malk=0):
+def get_opacities(gaslist,w1,w2,press,xpath='../Linelists',xlist="gaslistR10K.dat",malk=0):
     # Now we'll get the opacity files into an array
     ngas = len(gaslist)
 
     totgas = 0
     gasdata = []
+    xlist = "gaslistR10K.dat"
     with open(xlist) as fa:
         for line_aa in fa.readlines():
             if len(line_aa) == 0:
