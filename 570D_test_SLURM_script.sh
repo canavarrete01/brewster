@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH -J G570D_check_full
-#SBATCH --output=G570_924_check.o%j
-#SBATCH --error=G570_924_check.e%j
+#SBATCH -J G570D_check_108
+#SBATCH --output=G570_check_108.o%j
+#SBATCH --error=G570_check_108.e%j
 #SBATCH --nodes=2
 #SBATCH --ntasks-per-node=48
-#SBATCH --time=00:30:00
+#SBATCH --time=30:00:00
 #SBATCH --mail-user=cnavarrete@amnh.org
 #SBATCH --mail-type=ALL
 

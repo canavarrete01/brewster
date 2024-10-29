@@ -315,6 +315,21 @@ def proc_spec(shiftspec,theta,fwhm,chemeq,gasnum,obspec):
             spec3 = scale1 * conv_uniform_R(obspec[:,or3],modspec,R)
 
             outspec = np.array(np.concatenate((spec1,spec3),axis=0))
+
+        
+        elif (fwhm == -9):
+            # This is NIRSpec + MIRI, no order shifts, just instrument
+            # NIRSpec
+            R = 100
+            or1  = np.where(obspec[0,:] < 5.0)
+            spec1 = conv_uniform_R(obspec[:,or1],modspec,R)
+
+            #MIRI MRS roughly constant R = 2700
+            R = 100
+            or3 = np.where(obspec[0,:] > 5.0)
+            spec3 = scale1 * conv_uniform_R(obspec[:,or3],modspec,R)
+
+            outspec = np.array(np.concatenate((spec1,spec3),axis=0))
             
 
     return outspec
