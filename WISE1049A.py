@@ -53,7 +53,7 @@ runname = "W1049A_1.0" #EDITED ----------------
 # wavelength in microns
 # flux in W/m2/um
 # flux error
-obspec = np.asfortranarray(np.loadtxt("WISE1049_FullMedian/W1049A_Median_Spectra_BrewsterVer.dat.dat",dtype='d',unpack='true'))#EDITED ----------------
+obspec = np.asfortranarray(np.loadtxt("WISE1049_FullMedian/W1049A_Median_Spectra_BrewsterVer.dat",dtype='d',unpack='true'))#EDITED ----------------
 
 # Now the wavelength range
 w1 = 1.0 #EDITED ----------------
@@ -120,7 +120,7 @@ do_bff = 0
 # Type 2 is a Madhusudhan & Seager 2009 parameterised profile, no inversion
 # i.e. T1,P1 == T2,P2
 # Type 3 is Madhusudhan & Seager 2009 with an inversion
-proftype = 2
+proftype = 1
 pfile = "t1700g1000f3.dat"
 
 
@@ -159,7 +159,7 @@ mch4 = 0 #EDITED ----------------
 
 # now set up the EMCEE stuff
 # How many dimensions???  Count them up in the p0 declaration. Carefully
-ndim  = 11 #EDITED ----------------
+ndim  = 11 + 13  #Dimensions + 13 EDITED ----------------
 
 
 # How many walkers we running?
@@ -174,13 +174,13 @@ niter = 30000
 # Is this a test or restart?
 runtest = 1
 
-# Are we writing the arguments to a pickle?
+# Are we writing the arguments to a pickle? 
 # Set= 0 for no and run,Set = 1 for write and exit (no run); = 2 for write and continue
 # option 2 may cause a memory issue and crash a production run
-make_arg_pickle = 0
+make_arg_pickle = 2
 
 # Where is the output going?
-outdir = "/home/cnavarrete/mendel-nas1/BDNYC/brewster/"
+outdir = "/home/cnavarrete/mendel-nas1/BDNYC/brewster/W1049_Results"
 
 # Are we using DISORT for radiative transfer?
 # (HINT: Not in this century)
@@ -227,12 +227,12 @@ if (fresh == 0):
     p0[:,6] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 10.0 # TiO
     # p0[:,5] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 8.0 # VO
     # p0[:,6] = (1.0*np.random.randn(nwalkers).reshape(nwalkers)) - 8.0 # CrH
-	p0[:,7] = 0.1*np.random.randn(nwalkers).reshape(nwalkers) + 4.0  # gravity
-	p0[:,8] = r2d2 + (np.random.randn(nwalkers).reshape(nwalkers) * (0.5*r2d2))  # scale factor 1
-    # p0[:,7] =  1.0 + (np.random.randn(nwalkers).reshape(nwalkers) * 0.1) # scale factor 2 (for second instrument relative to first)
-	p0[:,9] = np.random.randn(nwalkers).reshape(nwalkers) * 20  # dlambda
-	p0[:,10] = np.log10((np.random.rand(nwalkers).reshape(nwalkers) * (max(obspec[2,:]**2)*(0.1 - 0.01))) + (0.01*min(obspec[2,10::3]**2))) # tolerance parameter 1
-    # p0[:,11] = np.log10((np.random.rand(nwalkers).reshape(nwalkers) * (max(obspec[2,:]**2)*(0.1 - 0.01))) + (0.01*min(obspec[2,10::3]**2))) # tolerance parameter 2
+    p0[:,7] = 0.1*np.random.randn(nwalkers).reshape(nwalkers) + 4.0  # gravity
+    p0[:,8] = r2d2 + (np.random.randn(nwalkers).reshape(nwalkers) * (0.5*r2d2))  # scale factor 1
+    #p0[:,7] =  1.0 + (np.random.randn(nwalkers).reshape(nwalkers) * 0.1) # scale factor 2 (for second instrument relative to first)
+    p0[:,9] = np.random.randn(nwalkers).reshape(nwalkers) * 20  # dlambda
+    p0[:,10] = np.log10((np.random.rand(nwalkers).reshape(nwalkers) * (max(obspec[2,:]**2)*(0.1 - 0.01))) + (0.01*min(obspec[2,10::3]**2))) # tolerance parameter 1
+    p0[:,11] = np.log10((np.random.rand(nwalkers).reshape(nwalkers) * (max(obspec[2,:]**2)*(0.1 - 0.01))) + (0.01*min(obspec[2,10::3]**2))) # tolerance parameter 2
 
     # If you do Chemical Equilibrium you will have these parameters instead
     # p0[:, 0] = (0.1 * np.random.randn(nwalkers).reshape(nwalkers)) - 0.5  # met
@@ -267,10 +267,10 @@ if (fresh == 0):
     
     # # ------ And now the T-P params. --------
     #For profile type 1
-    p0[:, ndim-14] = 50. + (np.random.randn(nwalkers).reshape(nwalkers))  # gamma - removes wiggles unless necessary to profile
+    p0[:, ndim-14] = 5.0 + (np.random.randn(nwalkers).reshape(nwalkers))  # gamma - removes wiggles unless necessary to profile
     BTprof = np.loadtxt("BTtemp800_45_13.dat")
     for i in range(0, 13):  # 13 layer points ====> Total: 13 + 13 (gases+) +no cloud = 26
-        p0[:,ndim-13 + i] = (BTprof[i] - 200.) + (150. * np.random.randn(nwalkers).reshape(nwalkers))
+        p0[:,ndim-13 + i] = (BTprof[i] - 200.) + (15.0 * np.random.randn(nwalkers).reshape(nwalkers))
     for i in range(0, nwalkers):
         while True:
             Tcheck = TPmod.set_prof(proftype, coarsePress, press, p0[i, ndim-13:])
@@ -278,7 +278,7 @@ if (fresh == 0):
                 break
             else:
                 for i in range(0,13):
-                    p0[:,ndim-13 + i] = BTprof[i] + (50. * np.random.randn(nwalkers).reshape(nwalkers))
+                    p0[:,ndim-13 + i] = BTprof[i] + (5.0 * np.random.randn(nwalkers).reshape(nwalkers))
 
     # These are for type 2. 
     # p0[:,24] = 0.39 + 0.1*np.random.randn(nwalkers).reshape(nwalkers)

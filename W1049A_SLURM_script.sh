@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J W1049A_check_1022
-#SBATCH --output=W1049A_check_1022.o%j
-#SBATCH --error=W1049A_check_1022.e%j
+#SBATCH -J W1049A_check_1029
+#SBATCH --output=W1049A_check_1029.o%j
+#SBATCH --error=W1049A_check_1029.e%j
 #SBATCH --nodes=2
 #SBATCH --ntasks-per-node=48
 #SBATCH --time=00:30:00
@@ -40,7 +40,7 @@ echo ------------------------------------------------------
 cd ${WDIR}
 
 
-mpirun python brewster_template.py > /home/cnavarrete/mendel-nas1/BDNYC/brewster/W1049_Results/W1049A_check.log
+mpirun python WISE1049A.py > /home/cnavarrete/mendel-nas1/BDNYC/brewster/W1049_Results/W1049A_check.log
 
 time_end=`date '+%T%t%d_%h_06'`
 echo Started at: $time_start

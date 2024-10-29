@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J G570D_check_108
-#SBATCH --output=G570_check_108.o%j
-#SBATCH --error=G570_check_108.e%j
+#SBATCH -J G570D_check_1030
+#SBATCH --output=G570_check_1030.o%j
+#SBATCH --error=G570_check_1030.e%j
 #SBATCH --nodes=2
 #SBATCH --ntasks-per-node=48
 #SBATCH --time=30:00:00
@@ -40,7 +40,7 @@ echo ------------------------------------------------------
 cd ${WDIR}
 
 
-mpirun python brewster_template.py > /home/cnavarrete/mendel-nas1/BDNYC/brewster/Results/G570D_check.log
+mpirun python G570D.py > /home/cnavarrete/mendel-nas1/BDNYC/brewster/G570D_Results/G570D_check.log
 
 time_end=`date '+%T%t%d_%h_06'`
 echo Started at: $time_start

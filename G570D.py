@@ -145,7 +145,7 @@ xlist = "gaslistR10k.dat"  #The gaslistR10k better. Rox is sampled at 10k (rathe
 # together at Asplund solar ratio. See Line at al (2015)
 # Else if K is after Na, they'll be separate
 
-gaslist = ['h2o','ch4', 'co', 'co2', 'nh3','k','na']  #EDITED ----------------
+gaslist = ['h2o','ch4', 'co', 'nh3','k','na']  #EDITED ----------------
 
 ngas = len(gaslist)
 
@@ -176,10 +176,10 @@ runtest = 1
 # Are we writing the arguments to a pickle?
 # Set= 0 for no and run,Set = 1 for write and exit (no run); = 2 for write and continue
 # option 2 may cause a memory issue and crash a production run
-make_arg_pickle = 1
+make_arg_pickle = 2
 
 # Where is the output going?
-outdir = "/home/cnavarrete/mendel-nas1/BDNYC/brewster/"
+outdir = "/home/cnavarrete/mendel-nas1/BDNYC/brewster/G570D_Results"
 
 # Are we using DISORT for radiative transfer?
 # (HINT: Not in this century)
