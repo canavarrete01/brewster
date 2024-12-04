@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J W1049A_check_1113
-#SBATCH --output=W1049A_check_1113.o%j
-#SBATCH --error=W1049A_check_1113.e%j
+#SBATCH -J W1049A_check_1204
+#SBATCH --output=W1049A_check_1204.o%j
+#SBATCH --error=W1049A_check_1204.e%j
 #SBATCH --nodes=2
 #SBATCH --ntasks-per-node=48
 #SBATCH --time=00:30:00
