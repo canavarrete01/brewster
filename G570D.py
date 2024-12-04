@@ -46,7 +46,7 @@ __status__ = "Development"
 # First get data and parameters for object
 
 # Give the run name
-runname = "G570D_1030" #EDITED ----------------
+runname = "G570D_1111" #EDITED ----------------
 
 # get the observed spectrum
 # text file with columns:
@@ -159,7 +159,7 @@ mch4 = 0 #EDITED ----------------
 # now set up the EMCEE stuff
 # How many dimensions???  Count them up in the p0 declaration. Carefully
 ndim  = 23 #EDITED ----------------
-
+#ndim is matrix_num + 13
 
 # How many walkers we running?
 nwalkers = ndim * 16
@@ -176,7 +176,7 @@ runtest = 1
 # Are we writing the arguments to a pickle?
 # Set= 0 for no and run,Set = 1 for write and exit (no run); = 2 for write and continue
 # option 2 may cause a memory issue and crash a production run
-make_arg_pickle = 2
+make_arg_pickle = 0
 
 # Where is the output going?
 outdir = "/home/cnavarrete/mendel-nas1/BDNYC/brewster/G570D_Results"
@@ -210,7 +210,7 @@ r2d2 = (71492e3)**2. / (dist * 3.086e+16)**2.
 
 # If we want fresh guess set to 0, total inherit the previous set 1
 # inherit plus randomise the VMRs. 2. See below to enter this filename
-fresh = 0
+fresh = 1
 p0 = np.empty([nwalkers,ndim])
 if (fresh == 0):
     # ----- "Gas" parameters (Includes gases, gravity, logg, scale factor, dlambda, and tolerance parameter) --
@@ -265,10 +265,10 @@ if (fresh == 0):
     # # ------ And now the T-P params. --------
     
     # For profile type 1
-    p0[:, ndim-14] = 0.10 + (np.random.randn(nwalkers).reshape(nwalkers))  # gamma - removes wiggles unless necessary to profile
+    p0[:, ndim-14] = 25.0 + (np.random.randn(nwalkers).reshape(nwalkers))  # gamma - removes wiggles unless necessary to profile
     BTprof = np.loadtxt("BTtemp800_45_13.dat")
     for i in range(0, 13):  # 13 layer points ====> Total: 13 + 13 (gases+) +no cloud = 26
-        p0[:,ndim-13 + i] = (BTprof[i] - 200.) + (0.30 * np.random.randn(nwalkers).reshape(nwalkers))
+        p0[:,ndim-13 + i] = (BTprof[i] - 200.) + (75 * np.random.randn(nwalkers).reshape(nwalkers))
     for i in range(0, nwalkers):
         while True:
             Tcheck = TPmod.set_prof(proftype, coarsePress, press, p0[i, ndim-13:])
@@ -276,7 +276,7 @@ if (fresh == 0):
                 break
             else:
                 for i in range(0,13):
-                    p0[:,ndim-13 + i] = BTprof[i] + (0.10 * np.random.randn(nwalkers).reshape(nwalkers))
+                    p0[:,ndim-13 + i] = BTprof[i] + (25.0 * np.random.randn(nwalkers).reshape(nwalkers))
     
     # These are for type 2. 
     # p0[:,15] = 0.39 + 0.1*np.random.randn(nwalkers).reshape(nwalkers)

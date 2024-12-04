@@ -23,6 +23,7 @@ from bensconv import prism_non_uniform
 from bensconv import conv_uniform_R
 from bensconv import conv_uniform_FWHM
 
+
 __author__ = "Ben Burningham"
 __copyright__ = "Copyright 2015 - Ben Burningham"
 __credits__ = ["Ben Burningham","The EMCEE DOCS"]
@@ -176,6 +177,7 @@ def lnprior(theta):
                 pc = ng+3
         elif (fwhm == -9):  
             s1  = np.where(obspec[0,:] < 5) 
+            s2 = s1
             s3 =  np.where(obspec[0,:] > 5) 
             r2d2 = theta[ng+1]
             vrad = theta[ng+2]
@@ -1098,9 +1100,11 @@ def lnlike(theta):
 
             if (do_fudge == 1):
                 s1 = obspec[2,or1]**2 + 10.**logf
+                s2 = s1
                 s3 = obspec[2,or2]**2 + 10.**logf
             else:
                 s1 = obspec[2,or1]**2
+                s2 = s1
                 s3 = obspec[2,or2]**2
 
             lnLik1=-0.5*np.sum((((obspec[1,or1[0][::7]] - spec1[::7])**2) / s1[0][::7]) + np.log(2.*np.pi*s1[0][::7]))
@@ -1426,7 +1430,7 @@ def get_opacities(gaslist,w1,w2,press,xpath='../Linelists',xlist='gaslistR10K.da
 
     totgas = 0
     gasdata = []
-    with open(xlist) as fa:
+    with open('gaslistR10K.dat') as fa:
         for line_aa in fa.readlines():
             if len(line_aa) == 0:
                 break

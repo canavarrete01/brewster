@@ -46,7 +46,7 @@ __status__ = "Development"
 # First get data and parameters for object
 
 # Give the run name
-runname = "W1049A_1.0" #EDITED ----------------
+runname = "W1049A_1113" #EDITED ----------------
 
 # get the observed spectrum
 # text file with columns:
@@ -146,7 +146,7 @@ xlist = "gaslistR10k.dat"  #The gaslistR10k better. Rox is sampled at 10k (rathe
 # Else if K is after Na, they'll be separate
 
 # gaslist = ['h2o','co','feh','ch4','k','na', 'tio']  #EDITED ---------------- ch4 h20, co2, co, feh, nak, tio, na + k,
-gaslist = ['h2o', 'co', 'co2', 'ch4', 'feh', 'na', 'k', 'tio']
+gaslist = ['h2o', 'ch4', 'co', 'co2', 'tio', 'feh', 'na', 'k']
 
 ngas = len(gaslist)
 
@@ -159,7 +159,7 @@ mch4 = 0 #EDITED ----------------
 
 # now set up the EMCEE stuff
 # How many dimensions???  Count them up in the p0 declaration. Carefully
-ndim  = 11 + 13  #Dimensions + 13 EDITED ----------------
+ndim  = 23  #Dimensions + 13 EDITED ----------------
 
 
 # How many walkers we running?
@@ -218,16 +218,16 @@ if (fresh == 0):
     # # For Non-chemical equilibrium
     #gaslist = ['h2o', 'co', 'co2', 'ch4', 'feh', 'na', 'k', 'tio']
     p0[:,0] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 3.5 # H2O
-    p0[:,1] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 3.0 # CO 
-    p0[:,2] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 5.0 # CO2  
-    p0[:,3] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 5.0 # CH4 
+    p0[:,1] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 5.0 # CH4 
+    p0[:,2] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 3.0 # CO  
+    p0[:,3] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 5.0 # CO2 
     # p0[:,4] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 4.6 # NH3
-    p0[:,4] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 8.0 # FeH
-    p0[:,5] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 6.5 # Na+K
-    p0[:,6] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 10.0 # TiO
+    p0[:,4] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 10.0 # TiO
+    p0[:,5] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 8.0 # FeH
+    p0[:,6] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 6.5 # Na+K
     # p0[:,5] = (0.5*np.random.randn(nwalkers).reshape(nwalkers)) - 8.0 # VO
     # p0[:,6] = (1.0*np.random.randn(nwalkers).reshape(nwalkers)) - 8.0 # CrH
-    p0[:,7] = 0.1*np.random.randn(nwalkers).reshape(nwalkers) + 4.0  # gravity
+    p0[:,7] = 0.1*np.random.randn(nwalkers).reshape(nwalkers) + 5.0  # gravity
     p0[:,8] = r2d2 + (np.random.randn(nwalkers).reshape(nwalkers) * (0.5*r2d2))  # scale factor 1
     #p0[:,7] =  1.0 + (np.random.randn(nwalkers).reshape(nwalkers) * 0.1) # scale factor 2 (for second instrument relative to first)
     p0[:,9] = np.random.randn(nwalkers).reshape(nwalkers) * 20  # dlambda
@@ -267,10 +267,10 @@ if (fresh == 0):
     
     # # ------ And now the T-P params. --------
     #For profile type 1
-    p0[:, ndim-14] = 5.0 + (np.random.randn(nwalkers).reshape(nwalkers))  # gamma - removes wiggles unless necessary to profile
+    p0[:, ndim-14] = 25.0 + (np.random.randn(nwalkers).reshape(nwalkers))  # gamma - removes wiggles unless necessary to profile
     BTprof = np.loadtxt("BTtemp800_45_13.dat")
     for i in range(0, 13):  # 13 layer points ====> Total: 13 + 13 (gases+) +no cloud = 26
-        p0[:,ndim-13 + i] = (BTprof[i] - 200.) + (15.0 * np.random.randn(nwalkers).reshape(nwalkers))
+        p0[:,ndim-13 + i] = (BTprof[i] - 200.) + (75.0 * np.random.randn(nwalkers).reshape(nwalkers))
     for i in range(0, nwalkers):
         while True:
             Tcheck = TPmod.set_prof(proftype, coarsePress, press, p0[i, ndim-13:])
@@ -278,7 +278,7 @@ if (fresh == 0):
                 break
             else:
                 for i in range(0,13):
-                    p0[:,ndim-13 + i] = BTprof[i] + (5.0 * np.random.randn(nwalkers).reshape(nwalkers))
+                    p0[:,ndim-13 + i] = BTprof[i] + (25.0 * np.random.randn(nwalkers).reshape(nwalkers))
 
     # These are for type 2. 
     # p0[:,24] = 0.39 + 0.1*np.random.randn(nwalkers).reshape(nwalkers)
