@@ -6,7 +6,7 @@ import os
 from rotBroadInt import rot_int_cmj as rotBroad
 
 
-def get_endchain(runname,fin,results_path='./'):
+def get_endchain(runname,fin,results_path=''):
     if (fin == 1):
         pic = results_path+runname+".pk1"
         sampler = pickle_load(pic)
@@ -59,6 +59,7 @@ def proc_spec(shiftspec,theta,fwhm,chemeq,gasnum,obspec):
     from bensconv import prism_non_uniform
     from bensconv import conv_uniform_R
     from bensconv import conv_uniform_FWHM
+    from bensconv import conv_non_uniform_R
 
     if chemeq == 0:
         if (gasnum[gasnum.size-1] == 22):
@@ -76,7 +77,7 @@ def proc_spec(shiftspec,theta,fwhm,chemeq,gasnum,obspec):
         if (fwhm == -1 or fwhm == -3 or fwhm == -4 or fwhm == -7):
             scale1 = theta[ng+2]
             scale2 = theta[ng+3]
-        elif (fwhm == -2 or fwhm == -8):
+        elif (fwhm == -2 or fwhm == -8 or fwhm == -9):
             scale1 = theta[ng+2]
         elif (fwhm == -6):
             scale1 = 1.0
@@ -93,10 +94,15 @@ def proc_spec(shiftspec,theta,fwhm,chemeq,gasnum,obspec):
         
         outspec = conv_uniform_FWHM(obspec,modspec,fwhm)
 
-    elif (fwhm > 10.00):
+    elif (fwhm > 10.00 and fwhm < 900):
         # this is a uniform resolving power R.
         Res = fwhm
         outspec = conv_uniform_R(obspec,modspec,Res)
+
+    elif (fwhm == 999):
+        # Harshil's convolution routine
+        R = obspec[-1, :]
+        outspec = conv_non_uniform_R(obspec,modspec,R)
 
     elif (fwhm == 0.0):
         # Use Mike's convolution for Spex
@@ -316,9 +322,8 @@ def proc_spec(shiftspec,theta,fwhm,chemeq,gasnum,obspec):
 
             outspec = np.array(np.concatenate((spec1,spec3),axis=0))
 
-        
         elif (fwhm == -9):
-            # This is NIRSpec + MIRI, no order shifts, just instrument
+            # This is NIRSpec PRISM + MIRI LRS, no order shifts, just instrument
             # NIRSpec
             R = 100
             or1  = np.where(obspec[0,:] < 5.0)
