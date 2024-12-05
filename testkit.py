@@ -22,7 +22,6 @@ from rotBroadInt import rot_int_cmj as rotBroad
 from bensconv import prism_non_uniform
 from bensconv import conv_uniform_R
 from bensconv import conv_uniform_FWHM
-from bensconv import conv_non_uniform_R
 
 __author__ = "Ben Burningham"
 __copyright__ = "Copyright 2015 - Ben Burningham"
@@ -175,29 +174,6 @@ def lnprior(theta):
                 logf2 = np.log10(0.1*(max(obspec[2,:]))**2)
                 logf3 = np.log10(0.1*(max(obspec[2,:]))**2)
                 pc = ng+3
-        elif (fwhm == -9):  
-            s1  = np.where(obspec[0,:] < 5) 
-            s2 = s1
-            s3 =  np.where(obspec[0,:] > 5) 
-            r2d2 = theta[ng+1]
-            vrad = theta[ng+2]
-            vsini = 10.
-            scale1 = 1.0
-            scale2 = 1.0
-            if (do_fudge == 1):
-                logf = theta[ng+3]
-                logf1 = theta[ng+4]
-                logf2 = np.log10(0.1*(max(obspec[2,:]))**2)
-                logf3 = np.log10(0.1*(max(obspec[2,:]))**2)
-                pc = ng+5
-            else:
-                # This is a place holder value so the code doesn't break
-                logf = np.log10(0.1*(max(obspec[2,10::3]))**2)
-                logf1 = np.log10(0.1*(max(obspec[2,:]))**2)
-                logf2 = np.log10(0.1*(max(obspec[2,:]))**2)
-                logf3 = np.log10(0.1*(max(obspec[2,:]))**2)
-                pc = ng+4
-                               
     elif (fwhm == 3.0):
         # this just copes with normal, single instrument data, but include vsini
         s1 = np.where(obspec[0,:] > 0.0)
@@ -781,11 +757,6 @@ def lnlike(theta):
             if (do_fudge == 1):
                 logf = theta[ng+3]
                 nb = 4
-        elif (fwhm == -9):
-            if (do_fudge == 1):
-                logf = theta[ng+3]
-                logf1 = theta[ng+4]
-                nb = 5
             else:
                 # This is a place holder value so the code doesn't break
                 logf = np.log10(0.1*(max(obspec[2,10::3]))**2)
@@ -820,9 +791,8 @@ def lnlike(theta):
         else:
             s2 = obspec[2,:]**2
 
-        lnLik=-0.5*np.sum((((obspec[1,:] - spec[:])**2) / s2) + np.log(2.*np.pi*s2))
-
-    elif (fwhm > 10.00 and fwhm < 900):
+        lnLik=-0.5*np.sum((((obspec[1,:] - spec[:])**2) / s2) + np.log(2.*np.pi*s2))       
+    elif (fwhm > 10.00):
         # this is a uniform resolving power R.
         Res = fwhm
         spec = conv_uniform_R(obspec,modspec,Res)
@@ -832,18 +802,6 @@ def lnlike(theta):
             s2 = obspec[2,:]**2
 
         lnLik=-0.5*np.sum((((obspec[1,:] - spec[:])**2) / s2) + np.log(2.*np.pi*s2))
-
-    elif (fwhm == 999):
-        # this is a non-uniform resolving power R.
-        R = obspec[-1, :]
-        spec = conv_non_uniform_R(obspec,modspec,R)
-        if (do_fudge == 1):
-            s2=obspec[2,:]**2 + 10.**logf
-        else:
-            s2 = obspec[2,:]**2
-
-        lnLik=-0.5*np.sum((((obspec[1,:] - spec[:])**2) / s2) + np.log(2.*np.pi*s2))
-
     elif (fwhm == 0.0):
         # Use convolution for Spex
         spec = prism_non_uniform(obspec,modspec,3.3)
@@ -1099,32 +1057,6 @@ def lnlike(theta):
             lnLik3=-0.5*np.sum((((obspec[1,or2[0][::3]] - spec2[::3])**2) / s3[0][::3]) + np.log(2.*np.pi*s3[0][::3]))
             lnLik = lnLik1 + lnLik3
 
-
-        elif (fwhm == -9):
-
-            or1  = np.where(obspec[0,:] < 5.0)
-            R=100
-            spec1 = conv_uniform_R(obspec[:,or1],modspec,R)
-
-
-            or2 = np.where(obspec[0,:] > 5.0)
-            R=100
-            spec2 = scale1 * conv_uniform_FWHM(obspec[:,or2],modspec,dL2)
-
-            if (do_fudge == 1):
-                s1 = obspec[2,or1]**2 + 10.**logf
-                s2 = s1
-                s3 = obspec[2,or2]**2 + 10.**logf
-            else:
-                s1 = obspec[2,or1]**2
-                s2 = s1
-                s3 = obspec[2,or2]**2
-
-            lnLik1=-0.5*np.sum((((obspec[1,or1[0][::7]] - spec1[::7])**2) / s1[0][::7]) + np.log(2.*np.pi*s1[0][::7]))
-            lnLik3=-0.5*np.sum((((obspec[1,or2[0][::3]] - spec2[::3])**2) / s3[0][::3]) + np.log(2.*np.pi*s3[0][::3]))
-            lnLik = lnLik1 + lnLik3
-
-
         elif (fwhm == -7):
             #This is CGS4 NIR + NIRC Lband * CGS4 Mband
             # CGS4 Second order R = 780xLambda
@@ -1236,13 +1168,6 @@ def modelspec(theta, args,gnostics):
             if (do_fudge == 1):
                 logf = theta[ng+3]
                 nb = 4
-        elif (fwhm == -9):
-            r2d2 = theta[ng+1]
-            vrad = theta[ng+2]
-            if (do_fudge == 1):
-                logf = theta[ng+3]
-                logf1 = theta[ng+4]
-                nb = 5
             else:
                 # This is a place holder value so the code doesn't break                                                                      
                 logf = np.log10(0.1*(max(obspec[2,10::3]))**2)
@@ -1375,8 +1300,6 @@ def modelspec(theta, args,gnostics):
         elif (fwhm == -5):
             R2D2 = r2d2
         elif (fwhm == -6):
-            R2D2 = r2d2
-        elif (fwhm == -9):
             R2D2 = r2d2
     else:
         R2D2 = r2d2
